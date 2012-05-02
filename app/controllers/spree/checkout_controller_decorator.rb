@@ -120,14 +120,13 @@ module Spree
 
       paypal_account = Spree::PaypalAccount.find_by_payer_id(params[:PayerID])
 
-      payment = @order.payments.create({
+      payment = @order.payments.create(
         :amount => ppx_auth_response.params["gross_amount"].to_f,
         :source => paypal_account,
         :source_type => 'Spree::PaypalAccount',
         :payment_method_id => params[:payment_method_id],
         :response_code => ppx_auth_response.params["ack"],
-        :avs_response => ppx_auth_response.avs_result["code"]},
-        :without_protection => true)
+        :avs_response => ppx_auth_response.avs_result["code"])
 
       payment.started_processing!
 
@@ -177,7 +176,7 @@ module Spree
     end
 
     def record_log(payment, response)
-      payment.log_entries.create({:details => response.to_yaml}, :without_protection => true)
+      payment.log_entries.create(:details => response.to_yaml)
     end
 
     def redirect_to_paypal_express_form_if_needed
