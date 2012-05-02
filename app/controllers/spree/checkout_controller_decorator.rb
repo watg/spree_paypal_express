@@ -146,6 +146,7 @@ module Spree
         end
 
         @order.update_attribute(:state, "complete")
+        state_callback(:after) # So that after_complete is called, setting session[:order_id] to nil
         @order.finalize!
         flash[:notice] = I18n.t(:order_processed_successfully)
         redirect_to completion_route
