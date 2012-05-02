@@ -2,6 +2,8 @@ class Spree::PaypalAccount < ActiveRecord::Base
   attr_accessible :email, :payer_id, :payer_country, :payer_status
   has_many :payments, :as => :source
 
+  attr_accessible :email, :payer_id, :payer_country, :payer_status
+
   def actions
     %w{capture credit}
   end
