@@ -210,7 +210,7 @@ module Spree
         :background_color        => "ffffff",  # must be hex only, six chars
         :header_background_color => "ffffff",
         :header_border_color     => "ffffff",
-	:header_image		 => chosen_image
+	:header_image		 => chosen_image,
         :allow_note              => true,
         :locale                  => user_locale,
         :req_confirm_shipping    => false,   # for security, might make an option later
