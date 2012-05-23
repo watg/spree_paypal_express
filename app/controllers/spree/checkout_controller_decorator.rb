@@ -147,7 +147,7 @@ module Spree
 
         @order.update_attribute(:state, "complete")
         state_callback(:after) # So that after_complete is called, setting session[:order_id] to nil
-        @order.consume_users_credit #since we dont rely on state machine callback, we just explicitly call this method for spree_store_credits
+        @order.send(:consume_users_credit) #since we dont rely on state machine callback, we just explicitly call this method for spree_store_credits
 
         @order.finalize!
         flash[:notice] = I18n.t(:order_processed_successfully)
