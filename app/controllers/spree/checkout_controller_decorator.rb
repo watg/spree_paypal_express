@@ -90,10 +90,11 @@ module Spree
           @order.ship_address = order_ship_address
           @order.bill_address ||= order_ship_address
         end
-
+        @order.state = "payment"
         @order.save
 
         if payment_method.preferred_review
+          @order.next
           render 'spree/shared/paypal_express_confirm'
         else
           paypal_finish

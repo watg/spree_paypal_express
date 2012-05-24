@@ -13,4 +13,7 @@ class Spree::BillingIntegration::PaypalExpressUk < Spree::BillingIntegration
     ActiveMerchant::Billing::PaypalExpressGateway
   end
 
+  def payment_profiles_supported?
+    !!preferred_review
+  end
 end

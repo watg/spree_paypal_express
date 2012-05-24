@@ -26,15 +26,13 @@ feature "paypal express" do
     ['firstname', 'lastname', 'address1', 'city', 'zipcode', 'phone'].each do |field|
       fill_in "order_#{str_addr}_attributes_#{field}", :with => "#{address.send(field)}"
     end
-    save_and_open_page
-
 
     select "#{address.state.name}", :from => "order_#{str_addr}_attributes_state_id"
     check "order_use_billing"
     click_button "Save and Continue"
 
-    choose "Paypal"
     pending
+    choose "Paypal"
     click_button "Save and Continue"
   end
 end

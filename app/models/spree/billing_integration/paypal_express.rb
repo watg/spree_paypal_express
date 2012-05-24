@@ -12,4 +12,8 @@ class Spree::BillingIntegration::PaypalExpress < Spree::BillingIntegration
   def provider_class
     ActiveMerchant::Billing::PaypalExpressGateway
   end
+  
+  def payment_profiles_supported?
+    !!preferred_review
+  end
 end
