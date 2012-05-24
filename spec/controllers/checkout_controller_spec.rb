@@ -108,7 +108,7 @@ module Spree
           get :paypal_confirm, {:order_id => order.number, :payment_method_id => "123", :token => token, :PayerID => "FWRVKNRRZ3WUC" }
 
           response.should render_template("shared/paypal_express_confirm")
-
+          order.state.should == "payment"
         end
       end
 
