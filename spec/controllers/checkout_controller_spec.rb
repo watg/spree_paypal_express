@@ -97,6 +97,7 @@ module Spree
 
           order.reload
           order.state.should == "complete"
+          order.completed_at.should_not be_nil
           order.payments.size.should == 1
           order.payment_state.should == "paid"
         end
