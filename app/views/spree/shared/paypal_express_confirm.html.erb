@@ -11,7 +11,7 @@
   </p>
 
   <div class="row" data-hook="checkout_content">
-    <div class="columns <%= if @order.state != 'confirm' then 'alpha twelve' else 'alpha omega sixteen' end %>" data-hook="checkout_form_wrapper">
+    <div class="row columns <%= if @order.state != 'confirm' then 'alpha twelve' else 'alpha omega sixteen' end %>" data-hook="checkout_form_wrapper">
       <%= render :partial => 'spree/shared/order_details', :locals => {:order => @order} -%>
       <div class="form-buttons">
         <%= button_to t(:place_order), paypal_finish_order_checkout_url(@order, {:token => params[:token] , :PayerID => params[:PayerID], :payment_method_id =>
