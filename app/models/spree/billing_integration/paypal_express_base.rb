@@ -16,4 +16,46 @@ class Spree::BillingIntegration::PaypalExpressBase < Spree::BillingIntegration
   def payment_profiles_supported?
     !!preferred_review
   end
+
+  def capture(payment_or_amount, account_or_response_code, gateway_options)
+    if payment_or_amount.is_a?(Spree::Payment)
+      authorization = find_authorization(payment_or_amount)
+      provider.capture(amount_in_cents(payment_or_amount.amount), authorization.params["transaction_id"], :currency => preferred_currency)
+    else
+      provider.capture(payment_or_amount, account_or_response_code, :currency => preferred_currency)
+    end
+  end
+
+  def credit(amount, account, response_code, gateway_options)
+    provider.credit(amount, response_code, :currency => preferred_currency)
+  end
+
+
+  def find_authorization(payment)
+    logs = payment.log_entries.all(:order => 'created_at DESC')
+    logs.each do |log|
+      details = YAML.load(log.details) # return the transaction details
+      if (details.params['payment_status'] == 'Pending' && details.params['pending_reason'] == 'authorization')
+        return details
+      end
+    end
+    return nil
+  end
+
+  def find_capture(payment)
+    #find the transaction associated with the original authorization/capture
+    logs = payment.log_entries.all(:order => 'created_at DESC')
+    logs.each do |log|
+      details = YAML.load(log.details) # return the transaction details
+      if details.params['payment_status'] == 'Completed'
+        return details
+      end
+    end
+    return nil
+  end
+
+  def amount_in_cents(amount)
+    (100 * amount).to_i
+  end
+
 end
