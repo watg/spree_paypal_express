@@ -105,4 +105,31 @@ describe Spree::BillingIntegration::PaypalExpressBase do
      end
   end
 
+  describe "#credit" do
+    before { payment.stub :response_code => '123' }
+    context "when payment_profiles_supported = true" do
+      before { gateway.stub :payment_profiles_supported? => true }
+
+
+      it "should receive correct params" do
+        provider.should_receive(:credit).with(1000, '123', :currency => 'EUR').and_return(success_response)
+        payment.credit!(10.0)
+        payment.response_code.should == '123'
+      end
+    end
+
+    context "when payment_profiles_supported = false" do
+      before do
+        payment.stub :response_code => '123'
+        gateway.stub :payment_profiles_supported? => false
+      end
+
+      it "should receive correct params" do
+        provider.should_receive(:credit).with(amount_in_cents, '123', :currency => 'EUR').and_return(success_response)
+        payment.credit!(10.0)
+        payment.response_code.should == '123'
+      end
+
+    end
+  end
 end

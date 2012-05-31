@@ -26,10 +26,11 @@ class Spree::BillingIntegration::PaypalExpressBase < Spree::BillingIntegration
     end
   end
 
-  def credit(amount, account, response_code, gateway_options)
+  def credit(*args)
+    amount = args.shift
+    response_code = args.first.is_a?(String) ? args.first : args[1]
     provider.credit(amount, response_code, :currency => preferred_currency)
   end
-
 
   def find_authorization(payment)
     logs = payment.log_entries.all(:order => 'created_at DESC')
