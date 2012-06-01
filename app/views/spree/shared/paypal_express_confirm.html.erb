@@ -15,9 +15,9 @@
       <%= render :partial => 'spree/shared/order_details', :locals => {:order => @order} -%>
       <hr class="clear"/>
       <div class="form-buttons">
-        <%= button_to t(:place_order), paypal_finish_order_checkout_url(@order, {:token => params[:token] , :PayerID => params[:PayerID], :payment_method_id =>
-        params[:payment_method_id] } ), :class => "button primary" %>
+        <%= button_to t(:place_order), paypal_finish_order_checkout_url(@order, {:token => params[:token] , :PayerID => params[:PayerID], :payment_method_id => params[:payment_method_id] } ), :class => "button primary" %>
       </div>
-  </div>
+    </div>
 
+  </div>
 </div>
