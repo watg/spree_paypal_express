@@ -1,21 +1,18 @@
 require 'spec_helper'
 
-feature "Paypal Express checkout" do
-  background do
-    # PAYMENT_STATES = Spree::Payment.state_machine.states.keys unless defined? PAYMENT_STATES
-    # SHIPMENT_STATES = Spree::Shipment.state_machine.states.keys unless defined? SHIPMENT_STATES
-    # ORDER_STATES = Spree::Order.state_machine.states.keys unless defined? ORDER_STATES
+describe "Paypal Express checkout" do
+  before do
     FactoryGirl.create(:shipping_method, :zone => Spree::Zone.find_by_name('North America'))
     FactoryGirl.create(:payment_method, :environment => 'test')
     @product = FactoryGirl.create(:product, :name => "RoR Mug")
     sign_in_as! FactoryGirl.create(:user)
 
-    Factory(:ppx)
+    FactoryGirl.create(:ppx)
   end
 
   let!(:address) { FactoryGirl.create(:address, :state => Spree::State.first) }
 
-  scenario "should display paypal link", :js => true do
+  it "should display paypal link", :js => true do
     visit spree.product_path(@product)
 
     click_button "Add To Cart"
