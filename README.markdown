@@ -35,8 +35,7 @@ Installation
 
 3. Copy & run migrations
 
-    rake railties:install:migrations
-    rake db:migrate
+    bundle exec rails g spree_social:install
 
 Versions
 ========
