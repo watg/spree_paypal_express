@@ -14,7 +14,7 @@ module Spree
     let(:details_for_response) { mock(ActiveMerchant::Billing::PaypalExpressResponse, :success? => true,
             :params => {"payer" => order.user.email, "payer_id" => "FWRVKNRRZ3WUC"}, :address => {}) }
 
-    let(:purchase_response) { mock(ActiveMerchant::Billing::PaypalExpressResponse, :success? => true,
+    let(:purchase_response) { mock(ActiveMerchant::Billing::PaypalExpressResponse, :success? => true, :authorization => 'ABC123456789',
         :params => {"payer" => order.user.email, "payer_id" => "FWRVKNRRZ3WUC", "gross_amount" => order_total, "payment_status" => "Completed"},
         :avs_result => "F",
         :to_yaml => "fake") }
@@ -167,7 +167,7 @@ module Spree
 
     context "paypal_finish" do
       let(:paypal_account) { stub_model(PaypalAccount, :payer_id => "FWRVKNRRZ3WUC", :email => order.email ) }
-      let(:authorize_response) { mock(ActiveMerchant::Billing::PaypalExpressResponse, :success? => true,
+      let(:authorize_response) { mock(ActiveMerchant::Billing::PaypalExpressResponse, :success? => true, :authorization => 'ABC123456789',
             :params => {"payer" => order.user.email, "payer_id" => "FWRVKNRRZ3WUC", "gross_amount" => order_total, "payment_status" => "Pending"},
             :avs_result => "F",
             :to_yaml => "fake") }

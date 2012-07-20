@@ -127,7 +127,7 @@ module Spree
         :source => paypal_account,
         :source_type => 'Spree::PaypalAccount',
         :payment_method_id => params[:payment_method_id],
-        :response_code => ppx_auth_response.params["ack"],
+        :response_code => ppx_auth_response.authorization,
         :avs_response => ppx_auth_response.avs_result["code"])
 
       payment.started_processing!

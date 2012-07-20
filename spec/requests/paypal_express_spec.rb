@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-feature "paypal express" do
+feature "Paypal Express checkout" do
   background do
-    PAYMENT_STATES = Spree::Payment.state_machine.states.keys unless defined? PAYMENT_STATES
-    SHIPMENT_STATES = Spree::Shipment.state_machine.states.keys unless defined? SHIPMENT_STATES
-    ORDER_STATES = Spree::Order.state_machine.states.keys unless defined? ORDER_STATES
+    # PAYMENT_STATES = Spree::Payment.state_machine.states.keys unless defined? PAYMENT_STATES
+    # SHIPMENT_STATES = Spree::Shipment.state_machine.states.keys unless defined? SHIPMENT_STATES
+    # ORDER_STATES = Spree::Order.state_machine.states.keys unless defined? ORDER_STATES
     FactoryGirl.create(:shipping_method, :zone => Spree::Zone.find_by_name('North America'))
     FactoryGirl.create(:payment_method, :environment => 'test')
     @product = FactoryGirl.create(:product, :name => "RoR Mug")
@@ -15,7 +15,7 @@ feature "paypal express" do
 
   let!(:address) { FactoryGirl.create(:address, :state => Spree::State.first) }
 
-  scenario "can use paypal confirm", :js => true do
+  scenario "should display paypal link", :js => true do
     visit spree.product_path(@product)
 
     click_button "Add To Cart"
@@ -31,8 +31,13 @@ feature "paypal express" do
     check "order_use_billing"
     click_button "Save and Continue"
 
-    pending
-    choose "Paypal"
+    #delivery
     click_button "Save and Continue"
+
+    choose "Paypal"
+    page.should have_selector('a#ppx')
+    click_button "Save and Continue"
+
+    current_path.should match /\A\/orders\/[A-Z][0-9]{9}\/checkout\/paypal_payment\z/
   end
 end

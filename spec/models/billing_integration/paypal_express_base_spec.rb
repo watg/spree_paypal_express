@@ -18,7 +18,7 @@ describe Spree::BillingIntegration::PaypalExpressBase do
   let(:provider) { gateway.provider }
 
   let(:account) do
-    mock_model(Spree::PaypalAccount)
+    stub_model(Spree::PaypalAccount)
   end
 
   let(:payment) do
