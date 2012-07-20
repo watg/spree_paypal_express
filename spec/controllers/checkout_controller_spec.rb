@@ -4,7 +4,7 @@ module Spree
   describe CheckoutController do
     render_views
     let(:token) { "EC-2OPN7UJGFWK9OYFV" }
-    let(:order) { Factory(:ppx_order_with_totals, :state => "payment", :shipping_method => shipping_method) }
+    let(:order) { FactoryGirl.create(:ppx_order_with_totals, :state => "payment", :shipping_method => shipping_method) }
     let(:shipping_method) { FactoryGirl.create(:shipping_method, :zone => Spree::Zone.find_by_name('North America'))  }
     let(:order_total) { (order.total * 100).to_i }
     let(:gateway_provider) { mock(ActiveMerchant::Billing::PaypalExpressGateway) }
