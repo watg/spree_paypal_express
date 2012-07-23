@@ -107,6 +107,7 @@ module Spree
         before do
            paypal_gateway.stub(:preferred_review => true, :payment_profiles_supported? => true)
            order.stub_chain(:payment, :payment_method, :payment_profiles_supported? => true)
+           order.stub_chain(:payment, :source, :type => 'Spree:PaypalAccount')
          end
 
         it "should render review" do
@@ -133,6 +134,7 @@ module Spree
           paypal_gateway.stub(:preferred_no_shipping => false)
           paypal_gateway.stub(:payment_profiles_supported? => true)
           order.stub_chain(:payment, :payment_method, :payment_profiles_supported? => true)
+          order.stub_chain(:payment, :source, :type => 'Spree:PaypalAccount')
           details_for_response.stub(:params => details_for_response.params.merge({'first_name' => 'Dr.', 'last_name' => 'Evil'}),
             :address => {'address1' => 'Apt. 187', 'address2'=> 'Some Str.', 'city' => 'Chevy Chase', 'country' => 'US', 'zip' => '20815', 'state' => 'MD' })
 
