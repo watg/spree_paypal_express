@@ -1,0 +1,16 @@
+<!--
+  insert_bottom '.payment-info'
+  original '9d4ef160bd508a47f906d7419c33cfc7eefc501d'
+-->
+<% if order.payment && order.payment.source.class.to_s == 'Spree::PaypalAccount' %>
+  <span class="cc-type">
+    <%= image_tag "paypal.png" %>
+    <%= order.payment.source.payer_status.to_s.capitalize %>
+  </span>
+  <br />
+  <span class="full-name">
+    <%= order.payment.source.email %>
+  </span>
+<% end %>
+
+
