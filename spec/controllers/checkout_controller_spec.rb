@@ -22,7 +22,7 @@ module Spree
 
     before do
       Spree::Auth::Config.set(:registration_step => false)
-      controller.stub(:current_order => order, :check_authorization => true, :current_user => order.user)
+      controller.stub(:current_order => order, :check_authorization => true, :spree_current_user => order.user)
       order.stub(:checkout_allowed? => true, :completed? => false)
       order.update!
     end
