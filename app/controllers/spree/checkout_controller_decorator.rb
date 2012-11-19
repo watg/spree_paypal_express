@@ -424,7 +424,9 @@ module Spree
         text = response.to_s
       end
 
-      msg = "#{I18n.t('gateway_error')}: #{text}"
+      # Parameterize text for i18n key
+      text = text.parameterize(sep = '_')
+      msg = "#{I18n.t('gateway_error')}: #{I18n.t(text)}"
       logger.error(msg)
       flash[:error] = msg
     end
