@@ -38,7 +38,7 @@ describe Spree::BillingIntegration::PaypalExpressBase do
                              :avs_result => { 'code' => 'avs-code' })
   end
 
-  let(:failed_response) { mock('gateway_response', :success? => false) }
+  let(:failed_response) { mock('failure_response', :success? => false) }
 
   before(:each) do
     # So it doesn't create log entries every time a processing method is called
@@ -51,7 +51,7 @@ describe Spree::BillingIntegration::PaypalExpressBase do
     context "when payment_profiles_supported = true" do
       before { gateway.stub :payment_profiles_supported? => true }
 
-       context "if sucessful" do
+       context "if successful" do
          before do
            provider.should_receive(:capture).with(amount_in_cents, '123', :currency => 'EUR').and_return(success_response)
          end
@@ -62,7 +62,7 @@ describe Spree::BillingIntegration::PaypalExpressBase do
          end
        end
 
-       context "if unsucessful" do
+       context "if unsuccessful" do
          before do
            gateway.should_receive(:capture).with(payment, account, anything).and_return(failed_response)
          end
@@ -80,7 +80,7 @@ describe Spree::BillingIntegration::PaypalExpressBase do
          gateway.stub :payment_profiles_supported? => false
        end
 
-       context "if sucessful" do
+       context "if successful" do
          before do
            provider.should_receive(:capture).with(amount_in_cents, '123', anything).and_return(success_response)
          end
@@ -91,7 +91,7 @@ describe Spree::BillingIntegration::PaypalExpressBase do
          end
        end
 
-       context "if unsucessful" do
+       context "if unsuccessful" do
          before do
            provider.should_receive(:capture).with(amount_in_cents, '123', anything).and_return(failed_response)
          end
@@ -109,7 +109,6 @@ describe Spree::BillingIntegration::PaypalExpressBase do
     before { payment.stub :response_code => '123' }
     context "when payment_profiles_supported = true" do
       before { gateway.stub :payment_profiles_supported? => true }
-
 
       it "should receive correct params" do
         provider.should_receive(:credit).with(1000, '123', :currency => 'EUR').and_return(success_response)

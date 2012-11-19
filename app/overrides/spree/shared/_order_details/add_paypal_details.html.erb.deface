@@ -12,5 +12,3 @@
     <%= order.payment.source.email %>
   </span>
 <% end %>
-
-

@@ -3,5 +3,6 @@
 spec/test_app
 spec/dummy
 .rvmrc
+.sass-cache
 .bundle
 Gemfile.lock

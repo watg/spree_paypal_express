@@ -8,8 +8,7 @@ module Spree
     let(:shipping_method) { FactoryGirl.create(:shipping_method, :zone => Spree::Zone.find_by_name('North America'))  }
     let(:order_total) { (order.total * 100).to_i }
     let(:gateway_provider) { mock(ActiveMerchant::Billing::PaypalExpressGateway) }
-    let(:paypal_gateway) { mock(BillingIntegration::PaypalExpress, :id => 123, :preferred_review => false, :preferred_no_shipping => true, :provider => gateway_provider, :preferred_currency => "US", :preferred_allow_guest_checkout => true
-    ) }
+    let(:paypal_gateway) { mock(BillingIntegration::PaypalExpress, :id => 123, :payment_profiles_supported? => false, :preferred_cart_checkout => false, :preferred_review => false, :preferred_no_shipping => true, :provider => gateway_provider, :preferred_currency => "US", :preferred_allow_guest_checkout => true ) }
 
     let(:details_for_response) { mock(ActiveMerchant::Billing::PaypalExpressResponse, :success? => true,
             :params => {"payer" => order.user.email, "payer_id" => "FWRVKNRRZ3WUC"}, :address => {}) }
@@ -19,11 +18,9 @@ module Spree
         :avs_result => "F",
         :to_yaml => "fake") }
 
-
     before do
-      Spree::Auth::Config.set(:registration_step => false)
       controller.stub(:current_order => order, :check_authorization => true, :spree_current_user => order.user)
-      order.stub(:checkout_allowed? => true, :completed? => false)
+      order.stub(:checkout_allowed? => true, :completed? => false, :payment_method => paypal_gateway)
       order.update!
     end
 
@@ -34,8 +31,8 @@ module Spree
       assert_routing("/orders/#{order.number}/checkout/paypal_confirm", {:controller => "checkout", :action => "paypal_confirm", :order_id => order.number })
     end
 
-    context "paypal_checkout" do
-      #feature not implemented
+    context "paypal_checkout from cart" do
+      pending 'feature not implemented'
     end
 
     context "paypal_payment without auto_capture" do
@@ -44,7 +41,7 @@ module Spree
       before { Spree::Config.set(:auto_capture => false) }
 
       it "should setup an authorize transaction and redirect to sandbox" do
-        PaymentMethod.should_receive(:find).at_least(1).with('123').and_return(paypal_gateway)
+        Spree::PaymentMethod.should_receive(:find).at_least(1).with('123').and_return(paypal_gateway)
 
         gateway_provider.should_receive(:redirect_url_for).with(token, {:review => false}).and_return redirect_url
         paypal_gateway.provider.should_receive(:setup_authorization).with(order_total, anything()).and_return(mock(:success? => true, :token => token))
@@ -62,7 +59,7 @@ module Spree
       before { Spree::Config.set(:auto_capture => true) }
 
       it "should setup a purchase transaction and redirect to sandbox" do
-        PaymentMethod.should_receive(:find).at_least(1).with("123").and_return(paypal_gateway)
+        Spree::PaymentMethod.should_receive(:find).at_least(1).with("123").and_return(paypal_gateway)
 
         gateway_provider.should_receive(:redirect_url_for).with(token, {:review => false}).and_return redirect_url
         paypal_gateway.provider.should_receive(:setup_purchase).with(order_total, anything()).and_return(mock(:success? => true, :token => token))
@@ -76,7 +73,7 @@ module Spree
 
     context "paypal_confirm" do
       before do
-        PaymentMethod.should_receive(:find).at_least(1).with("123").and_return(paypal_gateway)
+        Spree::PaymentMethod.should_receive(:find).at_least(1).with("123").and_return(paypal_gateway)
         order.stub!(:payment_method).and_return paypal_gateway
       end
 
@@ -175,8 +172,8 @@ module Spree
             :to_yaml => "fake") }
 
       before do
-        PaymentMethod.should_receive(:find).at_least(1).with("123").and_return(paypal_gateway)
-        PaypalAccount.should_receive(:find_by_payer_id).with("FWRVKNRRZ3WUC").and_return(paypal_account)
+        Spree::PaymentMethod.should_receive(:find).at_least(1).with("123").and_return(paypal_gateway)
+        Spree::PaypalAccount.should_receive(:find_by_payer_id).with("FWRVKNRRZ3WUC").and_return(paypal_account)
       end
 
       context "with auto_capture" do
@@ -298,7 +295,6 @@ module Spree
         order_total #need here so variable is set before credit is created.
         order.adjustments.create(:label => "Credit", :amount => -1)
         order.update!
-
         opts = controller.send(:order_opts, order, paypal_gateway.id, 'payment')
 
         opts.class.should == Hash

@@ -28,7 +28,7 @@ module Spree
 
     def paypal_payment
       load_order
-      opts = all_opts(@order,params[:payment_method_id], 'payment')
+      opts = all_opts(@order, params[:payment_method_id], 'payment')
       unless payment_method.preferred_cart_checkout
         opts.merge!(address_options(@order))
       else
@@ -266,7 +266,7 @@ module Spree
       {:currency => payment_method.preferred_currency, :allow_guest_checkout => payment_method.preferred_allow_guest_checkout }
     end
 
-    def order_opts(order, payment_method, stage)
+    def order_opts(order, payment_method_id, stage)
       items = order.line_items.map do |item|
         price = (item.price * 100).to_i # convert for gateway
         { :name        => item.variant.product.name,
@@ -297,7 +297,7 @@ module Spree
         credits_total = credits.map {|i| i[:amount] * i[:quantity] }.sum
       end
 
-      unless @order.payment_method.preferred_cart_checkout
+      unless order.payment_method.preferred_cart_checkout
         order_total = (order.total * 100).to_i
         shipping_total = (order.ship_total*100).to_i
       else
@@ -306,7 +306,7 @@ module Spree
         shipping_total = (shipping_cost).to_i
       end
 
-      opts = { :return_url        => paypal_confirm_order_checkout_url(order, :payment_method_id => payment_method),
+      opts = { :return_url        => paypal_confirm_order_checkout_url(order, :payment_method_id => payment_method_id),
                :cancel_return_url => edit_order_checkout_url(order, :state => :payment),
                :order_id          => order.number,
                :custom            => order.number,
@@ -326,7 +326,7 @@ module Spree
         #hack to add float rounding difference in as handling fee - prevents PayPal from rejecting orders
         #because the integer totals are different from the float based total. This is temporary and will be
         #removed once Spree's currency values are persisted as integers (normally only 1c)
-        if @order.payment_method.preferred_cart_checkout
+        if order.payment_method.preferred_cart_checkout
           opts[:handling] = 0
         else
           opts[:handling] = (order.total*100).to_i - opts.slice(:subtotal, :tax, :shipping).values.sum
@@ -381,8 +381,8 @@ module Spree
       end
     end
 
-    def all_opts(order, payment_method, stage=nil)
-      opts = fixed_opts.merge(order_opts(order, payment_method, stage)).merge(paypal_site_opts)
+    def all_opts(order, payment_method_id, stage=nil)
+      opts = fixed_opts.merge(order_opts(order, payment_method_id, stage)).merge(paypal_site_opts)
 
       if stage == "payment"
         opts.merge! flat_rate_shipping_and_handling_options(order, stage)
