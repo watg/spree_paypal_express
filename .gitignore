@@ -1,8 +1,9 @@
 *.swp
 .DS_store
-spec/test_app
-spec/dummy
 .rvmrc
 .sass-cache
 .bundle
+coverage
 Gemfile.lock
+spec/test_app
+spec/dummy
