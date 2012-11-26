@@ -337,8 +337,8 @@ module Spree
     end
 
     def shipping_options
-      #Uses users address if exists, if not uses first shipping method
-      if (current_user.present? && current_user.addresses.present?)
+      # Uses users address if exists (from spree_address_book or custom implementation), if not uses first shipping method.
+      if spree_current_user.present? && spree_current_user.respond_to?(:addresses) && spree_current_user.addresses.present?
         estimate_shipping_for_user
         shipping_default = @rate_hash_user.map.with_index do |shipping_method, idx|
           { :default => (idx == 0 ? true : false), 
@@ -469,8 +469,8 @@ module Spree
     end
 
     def estimate_shipping_for_user
-      zipcode = current_user.addresses.first.zipcode
-      country = current_user.addresses.first.country.iso
+      zipcode = spree_current_user.addresses.first.zipcode
+      country = spree_current_user.addresses.first.country.iso
       shipping_methods = Spree::ShippingMethod.all
       #TODO remove hard coded shipping
       #Make a deep copy of the order object then stub out the parts required to get a shipping quote
