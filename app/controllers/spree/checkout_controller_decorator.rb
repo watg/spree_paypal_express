@@ -349,7 +349,7 @@ module Spree
         shipping_method = ShippingMethod.all.first
         shipping_default = [{ :default => true, 
                               :name => shipping_method.name, 
-                              :amount => ((shipping_method.calculator.compute(self).to_f) * 100).to_i }]
+                              :amount => ((shipping_method.calculator.compute(@order).to_f) * 100).to_i }]
       end
 
       {
