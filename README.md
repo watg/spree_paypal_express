@@ -51,11 +51,11 @@ eCheck payments are now fully supported and PayPal's Instant Payment Notificatio
 
 2. Set the IPN URL on your PayPal account (under Profile on PayPal's website) to:
 
-     https://www.yourstore.com/paypal_notify
+         https://www.yourstore.com/paypal_notify
 
 3. Enable auto_capture within Spree (as eCheck payments are only supported for purchase and not authorize requests).
 
-     Spree::Config.set(:auto_capture => true)
+        Spree::Config.set(:auto_capture => true)
 
 
 
@@ -127,11 +127,11 @@ Running Specs
 
 1. Create Test App
 
-    rake test_app
+        rake test_app
 
 2. Run Specs
 
-    rake spec
+        rake spec
 
 NOTES
 =====
