@@ -23,8 +23,7 @@ the order (possibly select / change shipping address and method), then the user 
 MUST confirm the order on the Spree site before the payment is authorized / captured from PayPal (and the order is transitioned to the New state).
 
 
-Installation
-============
+## Installation
 
 1. Add the following line to your application's Gemfile
 
@@ -38,13 +37,12 @@ Installation
 
         bundle exec rails g spree_paypal_express:install
 
-Versions
-========
+## Versions
 
 To determine the correct version of this extension, please refer to the Versionfile.
 
-IPN & eCheck Support
-===================
+## IPN & eCheck Support
+
 eCheck payments are now fully supported and PayPal's Instant Payment Notification service is also supported for receiving updates relating to eCheck payments only. To configure eCheck payments you'll need to:
 
 1. Configure your PayPal account to accept eCheck payments (under Profile on PayPal's website).
@@ -59,8 +57,7 @@ eCheck payments are now fully supported and PayPal's Instant Payment Notificatio
 
 
 
-Configuration
-=============
+## Configuration
 
 1. Before you begin
 
@@ -98,8 +95,7 @@ Click **Create* , and now add your credentials in the screen that follows:
 
 Click **Update**
 
-Test Drive
-==========
+## Test Drive
 
 While testing PayPal Express checkout locally make sure you're logged into your PayPal **developer** account in another browser window before attempting a PayPal payment, as you'll be redirected and forced to sign in to your developer account.
 
@@ -122,8 +118,7 @@ While testing PayPal Express checkout locally make sure you're logged into your 
 9. Log into the Admin UI and review the Order and Payment details to confirm the successful checkout.
 
 
-Running Specs
-=============
+## Running Specs
 
 1. Create Test App
 
@@ -133,8 +128,7 @@ Running Specs
 
         rake spec
 
-NOTES
-=====
+## NOTES
 
 To automatically capture funds or enable accepting eCheck payments, add this to you site extension's activate method:
 
