@@ -1,6 +1,6 @@
 # Official PayPal Express for Spree
 
-[![Build Status](https://secure.travis-ci.org/spree/spree_paypal_express.png?branch=master)](http://travis-ci.org/spree/spree_paypal_express)
+[![Build Status](https://secure.travis-ci.org/spree/spree_paypal_express.png?branch=1-1-stable)](http://travis-ci.org/spree/spree_paypal_express)
 
 This is the official PayPal Express extension for Spree, based on the extension by PaulCC it has been extended to support Spree's
 Billing Integrations which allows users to configure the PayPal Express gateway including API login / password and signatures fields
