@@ -16,6 +16,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../dummy/config/environment", __FILE__)
 require 'rspec/rails'
 
+require 'database_cleaner'
 require 'factory_girl'
 FactoryGirl.find_definitions
 require 'ffaker'
@@ -26,7 +27,6 @@ Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 
 # Requires factories defined in spree_core
 require 'spree/core/testing_support/factories'
-require 'spree/core/testing_support/fixtures'
 require 'spree/core/testing_support/authorization_helpers'
 require 'spree/core/url_helpers'
 
@@ -35,7 +35,26 @@ RSpec.configure do |config|
   config.include Spree::Core::UrlHelpers
   config.color = true
 
-  config.use_transactional_fixtures = true
+  # Capybara javascript drivers require transactional fixtures set to false, and we just use DatabaseCleaner to cleanup after each test instead.
+  # Without transactional fixtures set to false none of the records created to setup a test will be available to the browser, which runs under a seperate server instance.
+  config.use_transactional_fixtures = false
+
+  config.before(:each) do
+    if example.metadata[:js]
+      DatabaseCleaner.strategy = :truncation
+    else
+      DatabaseCleaner.strategy = :transaction
+    end
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
+
 end
 
 Spree::Zone.class_eval do
