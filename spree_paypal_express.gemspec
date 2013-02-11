@@ -14,6 +14,8 @@ Gem::Specification.new do |s|
   s.has_rdoc      = false
 
   s.add_dependency 'spree_core', '~> 2.0.0.beta'
+  s.add_dependency 'spree_backend', '~> 2.0.0.beta'
+  s.add_dependency 'spree_frontend', '~> 2.0.0.beta'
 
   s.add_development_dependency 'capybara', '~> 1.1.3'
   s.add_development_dependency 'coffee-rails'

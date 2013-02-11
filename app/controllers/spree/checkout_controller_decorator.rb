@@ -396,7 +396,7 @@ module Spree
       if order.bill_address.present?
         opts[:address_override] = 1
         opts[:address] = {
-          :name => order.bill_address.full_name,
+          :name => order.bill_address.try(:full_name),
           :zip => order.bill_address.zipcode,
           :address1 => order.bill_address.address1,
           :address2 => order.bill_address.address2,

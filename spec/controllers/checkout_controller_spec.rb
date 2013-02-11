@@ -112,7 +112,8 @@ module Spree
       context "with review" do
         before do
           paypal_gateway.stub(:preferred_review => true, :payment_profiles_supported? => true)
-
+          @order.stub!(:bill_address).and_return create(:address)
+          @order.stub!(:ship_address).and_return create(:address)
           @order.stub_chain(:payment, :payment_method, :name => 'PaypalExpress')
           @order.stub_chain(:payment, :payment_method, :payment_profiles_supported? => true)
           @order.stub_chain(:payment, :source, :type => 'Spree:PaypalAccount')
