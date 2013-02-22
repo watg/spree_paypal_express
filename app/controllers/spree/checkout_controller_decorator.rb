@@ -203,6 +203,9 @@ module Spree
       return unless (params[:state] == "payment")
       return unless params[:order][:payments_attributes]
 
+      payment_method = Spree::PaymentMethod.find(params[:order][:payments_attributes].first[:payment_method_id])
+      return unless payment_method.kind_of?(Spree::BillingIntegration::PaypalExpress) || payment_method.kind_of?(Spree::BillingIntegration::PaypalExpressUk)
+
       if @order.update_attributes(object_params)
         if params[:order][:coupon_code] and !params[:order][:coupon_code].blank? and @order.coupon_code.present?
 
@@ -222,11 +225,7 @@ module Spree
          render :edit and return
       end
 
-      payment_method = Spree::PaymentMethod.find(params[:order][:payments_attributes].first[:payment_method_id])
-
-      if payment_method.kind_of?(Spree::BillingIntegration::PaypalExpress) || payment_method.kind_of?(Spree::BillingIntegration::PaypalExpressUk)
-        redirect_to(paypal_payment_order_checkout_url(@order, :payment_method_id => payment_method.id)) and return
-      end
+      redirect_to(paypal_payment_order_checkout_url(@order, :payment_method_id => payment_method.id)) and return
     end
 
     def fixed_opts
