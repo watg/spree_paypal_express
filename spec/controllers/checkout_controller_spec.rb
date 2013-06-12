@@ -5,7 +5,7 @@ module Spree
     render_views
     let(:token) { "EC-2OPN7UJGFWK9OYFV" }
     let(:order) { FactoryGirl.create(:ppx_order_with_totals, :state => "payment", :shipping_method => shipping_method) }
-    let(:shipping_method) { FactoryGirl.create(:shipping_method, :zone => Spree::Zone.find_by_name('North America'))  }
+    let(:shipping_method) { FactoryGirl.create(:shipping_method, :zones => [FactoryGirl.create(:zone, :name => 'North America')])  }
     let(:order_total) { (order.total * 100).to_i }
     let(:gateway_provider) { mock(ActiveMerchant::Billing::PaypalExpressGateway) }
     let(:paypal_gateway) { mock(BillingIntegration::PaypalExpress, :id => 123, :payment_profiles_supported? => false, :preferred_cart_checkout => false, :preferred_review => false, :preferred_no_shipping => true, :provider => gateway_provider, :preferred_currency => "US", :preferred_allow_guest_checkout => true ) }

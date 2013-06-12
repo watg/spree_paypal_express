@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Paypal Express checkout" do
   before do
-    FactoryGirl.create(:shipping_method, :zone => Spree::Zone.find_by_name('North America'))
+    FactoryGirl.create(:shipping_method, :zones => [FactoryGirl.create(:zone, :name => 'North America')])
     FactoryGirl.create(:payment_method, :environment => 'test')
     @product = FactoryGirl.create(:product, :name => "RoR Mug")
 
