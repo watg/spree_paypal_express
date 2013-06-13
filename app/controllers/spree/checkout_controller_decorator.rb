@@ -22,7 +22,7 @@ module Spree
 
       redirect_to(@gateway.redirect_url_for(response.token, :review => payment_method.preferred_review))
     rescue ActiveMerchant::ConnectionError => e
-      gateway_error I18n.t(:unable_to_connect_to_gateway)
+      gateway_error Spree.t(:unable_to_connect_to_gateway)
       redirect_to :back
     end
 
@@ -52,7 +52,7 @@ module Spree
 
       redirect_to(@gateway.redirect_url_for(@ppx_response.token, :review => payment_method.preferred_review))
     rescue ActiveMerchant::ConnectionError => e
-      gateway_error I18n.t(:unable_to_connect_to_gateway)
+      gateway_error Spree.t(:unable_to_connect_to_gateway)
       redirect_to :back
     end
 
@@ -123,7 +123,7 @@ module Spree
         redirect_to edit_order_checkout_url(@order, :state => "payment")
       end
     rescue ActiveMerchant::ConnectionError => e
-      gateway_error I18n.t(:unable_to_connect_to_gateway)
+      gateway_error Spree.t(:unable_to_connect_to_gateway)
       redirect_to edit_order_url(@order)
     end
 
@@ -171,7 +171,7 @@ module Spree
         end
 
         @order.finalize!
-        flash[:notice] = I18n.t(:order_processed_successfully)
+        flash[:notice] = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "true"
         redirect_to completion_route
       else
@@ -183,7 +183,7 @@ module Spree
         redirect_to edit_order_checkout_url(@order, :state => "payment")
       end
     rescue ActiveMerchant::ConnectionError => e
-      gateway_error I18n.t(:unable_to_connect_to_gateway)
+      gateway_error Spree.t(:unable_to_connect_to_gateway)
       redirect_to edit_order_url(@order)
     end
 
@@ -208,7 +208,7 @@ module Spree
           if promo = Spree::Promotion.with_coupon_code(@order.coupon_code).where(:event_name => event_name).first
             fire_event(event_name, :coupon_code => @order.coupon_code)
           else
-            flash[:error] = t(:promotion_not_found)
+            flash[:error] = Spree.t(:promotion_not_found)
             render :edit and return
           end
 
@@ -444,7 +444,7 @@ module Spree
 
       # Parameterize text for i18n key
       text = text.parameterize(sep = '_')
-      msg = "#{I18n.t('gateway_error')}: #{I18n.t(text)}"
+      msg = "#{Spree.t('gateway_error')}: #{Spree.t(text)}"
       logger.error(msg)
       flash[:error] = msg
     end
