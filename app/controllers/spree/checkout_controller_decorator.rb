@@ -102,13 +102,8 @@ module Spree
 
           @order.ship_address = order_ship_address
           @order.bill_address ||= order_ship_address
-
-          #Add Instant Update Shipping
-          if payment_method.preferred_cart_checkout
-            add_shipping_charge
-          end
-
         end
+
         @order.state = "payment"
         @order.save
 
@@ -461,19 +456,6 @@ module Spree
 
     def paypal_gateway
       payment_method.provider
-    end
-
-    def add_shipping_charge
-      shipment_name = @ppx_details.shipping['amount'].chomp(" Shipping")
-      shipment_cost = @ppx_details.shipping['name'].to_f
-
-      if @order.shipping_method_id.blank? && @order.rate_hash.present?
-        selected_shipping = @order.rate_hash.detect { |v| v['name'] == shipment_name && v['cost'] == shipment_cost }
-        @order.shipping_method_id = selected_shipping.id
-      end
-      @order.shipments.each { |s| s.destroy unless s.shipping_method.available_to_order?(@order) }
-      @order.create_shipment!
-      @order.update!
     end
 
     def estimate_shipping_for_user
