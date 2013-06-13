@@ -142,13 +142,14 @@ module Spree
 
       paypal_account = Spree::PaypalAccount.find_by_payer_id(params[:PayerID])
 
-      payment = @order.payments.create(
-        :amount => ppx_auth_response.params["gross_amount"].to_f,
-        :source => paypal_account,
-        :source_type => 'Spree::PaypalAccount',
-        :payment_method_id => params[:payment_method_id],
-        :response_code => ppx_auth_response.authorization,
-        :avs_response => ppx_auth_response.avs_result["code"])
+      payment = @order.payments.create do |p|
+        p.amount = ppx_auth_response.params["gross_amount"].to_f
+        p.source = paypal_account
+        p.source_type = 'Spree::PaypalAccount'
+        p.payment_method_id = params[:payment_method_id]
+        p.response_code = ppx_auth_response.authorization
+        p.avs_response = ppx_auth_response.avs_result["code"]
+      end
 
       payment.started_processing!
 
