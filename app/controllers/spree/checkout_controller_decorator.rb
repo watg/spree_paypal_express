@@ -69,10 +69,14 @@ module Spree
 
         #TODO Search for existing records
 
-        Spree::PaypalAccount.create(:email => @ppx_details.params["payer"],
+        source = Spree::PaypalAccount.create(:email => @ppx_details.params["payer"],
                                     :payer_id => @ppx_details.params["payer_id"],
                                     :payer_country => @ppx_details.params["payer_country"],
                                     :payer_status => @ppx_details.params["payer_status"])
+
+        payment = @order.payments.last
+        payment.source ||= source
+        payment.save
 
         @order.special_instructions = @ppx_details.params["note"]
 
