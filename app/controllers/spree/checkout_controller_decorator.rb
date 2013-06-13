@@ -165,8 +165,6 @@ module Spree
 
         @order.update_attributes({:state => "complete", :completed_at => Time.now}, :without_protection => true)
 
-        state_callback(:after) # So that after_complete is called, setting session[:order_id] to nil
-
         # Since we dont rely on state machine callback, we just explicitly call this method for spree_store_credits
         if @order.respond_to?(:consume_users_credit, true)
           @order.send(:consume_users_credit)
