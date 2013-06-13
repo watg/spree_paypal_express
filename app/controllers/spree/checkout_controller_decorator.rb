@@ -301,7 +301,7 @@ module Spree
         credits_total = credits.map {|i| i[:amount] * i[:quantity] }.sum
       end
 
-      if payment_method.preferred_cart_checkout and (order.shipping_method.blank? or order.ship_total == 0)
+      if payment_method.preferred_cart_checkout and (order.shipments.first.shipping_method.blank? or order.ship_total == 0)
         shipping_cost  = shipping_options[:shipping_options].first[:amount]
         order_total    = (order.total * 100 + (shipping_cost)).to_i
         shipping_total = (shipping_cost).to_i
