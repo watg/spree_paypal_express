@@ -339,7 +339,7 @@ module Spree
       # Uses users address if exists (from spree_address_book or custom implementation), if not uses first shipping method.
       if spree_current_user.present? && spree_current_user.respond_to?(:addresses) && spree_current_user.addresses.present?
         estimate_shipping_for_user
-        shipping_default = @rate_hash_user.map.with_index do |shipping_method, idx|
+        shipping_options = @rate_hash_user.map.with_index do |shipping_method, idx|
           if @order.shipping_method_id
             default = (@order.shipping_method_id == shipping_method.id)
           else
@@ -352,17 +352,20 @@ module Spree
           }
         end
       else
-        shipping_method = @order.shipping_method_id ? ShippingMethod.find(@order.shipping_method_id) : ShippingMethod.all.first
-        shipping_default = [{ :default => true,
-                              :name => shipping_method.name,
-                              :amount => ((shipping_method.calculator.compute(@order).to_f) * 100).to_i }]
+        ShippingMethod.all.each do |shipping_method|
+          {
+            :default => shipping_method == @order.shipment.shipping_method,
+            :name => shipping_method.name,
+            :amount => ((shipping_method.calculator.compute(@order).to_f) * 100).to_i
+          }
+        end
       end
 
       {
         :callback_url      => spree.root_url + "paypal_shipping_update",
         :callback_timeout  => 6,
         :callback_version  => '61.0',
-        :shipping_options  => shipping_default
+        :shipping_options  => shipping_options
       }
     end
 
