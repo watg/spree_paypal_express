@@ -201,24 +201,40 @@ module Spree
       return unless (params[:state] == "payment")
       return unless params[:order][:payments_attributes]
 
-      if @order.update_attributes(object_params)
-        if params[:order][:coupon_code] and !params[:order][:coupon_code].blank? and @order.coupon_code.present?
-
-          event_name = "spree.checkout.coupon_code_added"
-          if promo = Spree::Promotion.with_coupon_code(@order.coupon_code).where(:event_name => event_name).first
-            fire_event(event_name, :coupon_code => @order.coupon_code)
-          else
-            flash[:error] = Spree.t(:promotion_not_found)
-            render :edit and return
-          end
-
-        end
-      end
-
-      load_order
+      # if @order.update_attributes(object_params)
+      #   if params[:order][:coupon_code] and !params[:order][:coupon_code].blank? and @order.coupon_code.present?
+      # 
+      #     event_name = "spree.checkout.coupon_code_added"
+      #     if promo = Spree::Promotion.with_coupon_code(@order.coupon_code).where(:event_name => event_name).first
+      #       fire_event(event_name, :coupon_code => @order.coupon_code)
+      #     else
+      #       flash[:error] = Spree.t(:promotion_not_found)
+      #       render :edit and return
+      #     end
+      # 
+      #   end
+      # end
+      # 
+      # load_order
       payment_method = Spree::PaymentMethod.find(params[:order][:payments_attributes].first[:payment_method_id])
 
       if payment_method.kind_of?(Spree::BillingIntegration::PaypalExpress) || payment_method.kind_of?(Spree::BillingIntegration::PaypalExpressUk)
+        if @order.update_attributes(object_params)
+          if params[:order][:coupon_code] and !params[:order][:coupon_code].blank? and @order.coupon_code.present?
+            
+            event_name = "spree.checkout.coupon_code_added"
+            if promo = Spree::Promotion.with_coupon_code(@order.coupon_code).where(:event_name => event_name).first
+              fire_event(event_name, :coupon_code => @order.coupon_code)
+            else
+              flash[:error] = Spree.t(:promotion_not_found)
+              render :edit and return
+            end
+            
+          end
+        end
+        
+        load_order
+        
         redirect_to(paypal_payment_order_checkout_url(@order, :payment_method_id => payment_method.id)) and return
       end
     end
@@ -352,15 +368,17 @@ module Spree
           }
         end
       else
-        ShippingMethod.all.each do |shipping_method|
+        shipping_options = ShippingMethod.all.collect do |shipping_method|
           {
             :default => shipping_method == @order.shipment.shipping_method,
             :name => shipping_method.name,
             :amount => ((shipping_method.calculator.compute(@order).to_f) * 100).to_i
           }
         end
+        puts "else branch"
+        puts "shipping_options: #{shipping_options}"
+        
       end
-
       {
         :callback_url      => spree.root_url + "paypal_shipping_update",
         :callback_timeout  => 6,
