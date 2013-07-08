@@ -201,21 +201,6 @@ module Spree
       return unless (params[:state] == "payment")
       return unless params[:order][:payments_attributes]
 
-      # if @order.update_attributes(object_params)
-      #   if params[:order][:coupon_code] and !params[:order][:coupon_code].blank? and @order.coupon_code.present?
-      # 
-      #     event_name = "spree.checkout.coupon_code_added"
-      #     if promo = Spree::Promotion.with_coupon_code(@order.coupon_code).where(:event_name => event_name).first
-      #       fire_event(event_name, :coupon_code => @order.coupon_code)
-      #     else
-      #       flash[:error] = Spree.t(:promotion_not_found)
-      #       render :edit and return
-      #     end
-      # 
-      #   end
-      # end
-      # 
-      # load_order
       payment_method = Spree::PaymentMethod.find(params[:order][:payments_attributes].first[:payment_method_id])
 
       if payment_method.kind_of?(Spree::BillingIntegration::PaypalExpress) || payment_method.kind_of?(Spree::BillingIntegration::PaypalExpressUk)
@@ -320,24 +305,29 @@ module Spree
         order_total    = (order.total * 100).to_i
         shipping_total = (order.ship_total * 100).to_i
       end
-
+      
+      tax_total = (order.tax_total*100).to_i
+      
+      
       opts = { :return_url        => paypal_confirm_order_checkout_url(order, :payment_method_id => payment_method_id),
                :cancel_return_url => edit_order_checkout_url(order, :state => :payment),
                :order_id          => order.number,
                :custom            => order.number,
                :items             => items,
                :subtotal          => ((order.item_total * 100) + credits_total).to_i,
-               :tax               => (order.tax_total*100).to_i,
+               :tax               => tax_total < 0 ? 0 : tax_total, # set tax to 0 if negative
                :shipping          => shipping_total,
                :money             => order_total,
                :max_amount        => (order.total * 300).to_i}
+               
+      puts "~~~~~~~~~~~~~~~~~~~~~ OPTS including tax: #{opts.inspect}"
 
       if stage == "checkout"
         opts[:handling] = 0
-
         opts[:callback_url] = spree.root_url + "paypal_express_callbacks/#{order.number}"
         opts[:callback_timeout] = 3
       elsif stage == "payment"
+        
         #hack to add float rounding difference in as handling fee - prevents PayPal from rejecting orders
         #because the integer totals are different from the float based total. This is temporary and will be
         #removed once Spree's currency values are persisted as integers (normally only 1c)
@@ -368,16 +358,22 @@ module Spree
           }
         end
       else
-        shipping_options = ShippingMethod.all.collect do |shipping_method|
-          {
-            :default => shipping_method == @order.shipment.shipping_method,
-            :name => shipping_method.name,
-            :amount => ((shipping_method.calculator.compute(@order).to_f) * 100).to_i
-          }
-        end
-        puts "else branch"
-        puts "shipping_options: #{shipping_options}"
+        # We only pass one shipping method, the default one.
+        # If we would pass all the alternative, we might end up with an incongruent state of the order
+        # (because the order total has been calculated with the selected/default shipping method)
         
+        shipping_options = [{
+          :default => true,
+          :name => @order.shipment.shipping_method.name,
+          :amount =>((@order.shipment.shipping_method.calculator.compute(@order).to_f) * 100).to_i
+        }]
+        # shipping_options = ShippingMethod.all.collect do |shipping_method|
+        #   {
+        #     :default => shipping_method == @order.shipment.shipping_method,
+        #     :name => shipping_method.name,
+        #     :amount => ((shipping_method.calculator.compute(@order).to_f) * 100).to_i
+        #   }
+        # end
       end
       {
         :callback_url      => spree.root_url + "paypal_shipping_update",
