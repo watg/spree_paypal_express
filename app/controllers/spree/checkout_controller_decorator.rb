@@ -263,7 +263,7 @@ module Spree
 
     # hook to override paypal site options
     def paypal_site_opts
-      {:currency => payment_method.preferred_currency, :allow_guest_checkout => payment_method.preferred_allow_guest_checkout }
+      {:currency => current_currency || payment_method.preferred_currency, :allow_guest_checkout => payment_method.preferred_allow_guest_checkout }
     end
 
     def order_opts(order, payment_method_id, stage)
@@ -320,7 +320,6 @@ module Spree
                :money             => order_total,
                :max_amount        => (order.total * 300).to_i}
                
-      puts "~~~~~~~~~~~~~~~~~~~~~ OPTS including tax: #{opts.inspect}"
 
       if stage == "checkout"
         opts[:handling] = 0
