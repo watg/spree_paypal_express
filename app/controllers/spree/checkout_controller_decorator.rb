@@ -360,12 +360,16 @@ module Spree
         # We only pass one shipping method, the default one.
         # If we would pass all the alternative, we might end up with an incongruent state of the order
         # (because the order total has been calculated with the selected/default shipping method)
+        if @order.shipment and @order.shipment.shipping_method
+          shipping_options = [{
+            :default => true,
+            :name => @order.shipment.shipping_method.name,
+            :amount =>((@order.shipment.shipping_method.calculator.compute(@order).to_f) * 100).to_i
+          }]
+        else
+          shipping_options = [{}]
+        end
         
-        shipping_options = [{
-          :default => true,
-          :name => @order.shipment.shipping_method.name,
-          :amount =>((@order.shipment.shipping_method.calculator.compute(@order).to_f) * 100).to_i
-        }]
         # shipping_options = ShippingMethod.all.collect do |shipping_method|
         #   {
         #     :default => shipping_method == @order.shipment.shipping_method,
