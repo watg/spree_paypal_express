@@ -2,6 +2,9 @@ module Spree
   class PaypalExpressCallbacksController < Spree::BaseController
     include ActiveMerchant::Billing::Integrations
     skip_before_filter :verify_authenticity_token
+    http_basic_authenticate_with  :name => ENV['ADYEN_HTTP_BASIC_USERNAME'] || 'username', 
+                                  :password => ENV['ADYEN_HTTP_BASIC_PASSWORD'] || 'password', :only => :notify
+    
 
     ssl_required
 
