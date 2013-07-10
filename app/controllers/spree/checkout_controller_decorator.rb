@@ -263,7 +263,8 @@ module Spree
 
     # hook to override paypal site options
     def paypal_site_opts
-      {:currency => current_currency || payment_method.preferred_currency, :allow_guest_checkout => payment_method.preferred_allow_guest_checkout }
+      # NOTE: maybe current_currency should not be used here. Using session[:currency] for now.
+      {:currency => session[:currency] || payment_method.preferred_currency, :allow_guest_checkout => payment_method.preferred_allow_guest_checkout }
     end
 
     def order_opts(order, payment_method_id, stage)
