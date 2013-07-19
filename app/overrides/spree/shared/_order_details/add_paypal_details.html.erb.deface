@@ -6,7 +6,7 @@
 <% if paypal_payment %>
   <span class="cc-type">
     <%= image_tag "paypal.png" %>
-    <%= t("paypal_payer_statuses.#{paypal_payment.source.payer_status.to_s}").capitalize %>
+    <%#= t("paypal_payer_statuses.#{paypal_payment.source.payer_status.to_s}").capitalize %>
   </span>
   <br />
   <span class="full-name">
